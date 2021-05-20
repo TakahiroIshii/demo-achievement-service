@@ -1,0 +1,7 @@
+--require ts-node/register
+--require reflect-metadata
+--require ./tests/init.ts
+--timeout 10000
+--exit
+--recursive
+--extension ts
