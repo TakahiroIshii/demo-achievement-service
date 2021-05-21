@@ -1,8 +1,8 @@
-import { singleton } from 'tsyringe';
+import { injectable } from 'tsyringe';
 
 import { Logger } from '../utils';
 
-@singleton()
+@injectable()
 export class AchievementService {
   constructor(private readonly logger: Logger) {}
   async add(id: string) {

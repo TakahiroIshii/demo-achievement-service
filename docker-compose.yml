@@ -9,7 +9,7 @@ services:
     ports:
       - 4566:4566
     environment:
-      - SERVICES=sqs
+      - SERVICES=dynamodb,sqs
       - DOCKER_HOST=unix:///var/run/docker.sock
     volumes:
       - ./docker:/docker-entrypoint-initaws.d
