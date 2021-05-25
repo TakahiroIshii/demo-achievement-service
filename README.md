@@ -14,6 +14,13 @@ yarn start
 
 ## run tests
 
+add .env.test file under /tests with
+
+```
+#.env.test
+TABLE_PREFIX=test_
+```
+
 ```
 yarn test:integration
 ```
