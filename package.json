@@ -10,7 +10,8 @@
     "test:integration": "TS_NODE_TRANSPILE_ONLY=1 mocha tests --opts ./tests/mocha.opts",
     "test:type": "yarn tsc --noEmit -p tsconfig.build.json",
     "test:lint": "eslint src/**/*.ts",
-    "lint-staged": "lint-staged"
+    "lint-staged": "lint-staged",
+    "sqs:init": "aws --endpoint-url=http://localhost:4566 sqs create-queue --queue-name achievementQueue"
   },
   "dependencies": {
     "aigle": "^1.14.1",

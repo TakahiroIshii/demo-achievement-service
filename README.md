@@ -6,6 +6,12 @@
 docker-compose up
 ```
 
+## init sqs
+
+```
+yarn sqs:init
+```
+
 ## run server
 
 ```
