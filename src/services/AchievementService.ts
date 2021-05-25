@@ -1,6 +1,6 @@
 import { injectable } from 'tsyringe';
 
-import { AchievementRepository } from '../repositorys';
+import { AchievementRepository } from '../repositories';
 import { Logger } from '../utils';
 
 @injectable()

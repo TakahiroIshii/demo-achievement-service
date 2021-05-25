@@ -27,7 +27,8 @@ export class Achievement extends Table {
   static readonly writer: Query.Writer<Achievement>;
 }
 
-export abstract class Meta {}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Meta {}
 
 export interface AchievementMeta extends Meta {
   achievedAt: number;
@@ -39,5 +40,5 @@ export interface ProgressMeta extends Meta {
 
 export enum DataTypePrefixes {
   achievement = 'achievement_',
-  progress = 'achievement_',
+  progress = 'progress_',
 }

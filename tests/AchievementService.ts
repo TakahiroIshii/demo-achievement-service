@@ -24,6 +24,7 @@ describe('AchievementService', () => {
 
   describe('getAll', () => {
     it('should be able to get all achievements for the user', async () => {
+      await achievementService.progress(userId, testAchievementId);
       const achievements = await achievementService.getAll(userId);
       assert.strictEqual(achievements.length, 1);
       const [achievement] = achievements;

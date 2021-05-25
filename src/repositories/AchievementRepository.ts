@@ -1,3 +1,4 @@
+import { Operator } from 'dynamo-types/dst/query';
 import { singleton } from 'tsyringe';
 
 import { Achievement, DataTypePrefixes } from '../models';
@@ -14,7 +15,9 @@ export class AchievementRepository extends BaseRepository {
     } catch (err) {
       if (err.name == 'ResourceNotFoundException') {
         await Achievement.createTable();
+        return;
       }
+      throw err;
     }
   }
 
@@ -51,7 +54,16 @@ export class AchievementRepository extends BaseRepository {
     achievement.meta = {
       achievedAt: Date.now(),
     };
-    await Achievement.writer.put(achievement);
+    try {
+      await Achievement.writer.put(achievement, {
+        condition: { expiresAt: new Operator('attributeNotExists', 0, false) },
+      });
+    } catch (err) {
+      if (err.code === 'ConditionalCheckFailedException') {
+        return;
+      }
+      throw err;
+    }
   }
 
   async createProgress(userId: UserId, achievementId: AchievementId) {

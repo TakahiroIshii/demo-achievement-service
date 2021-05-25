@@ -5,12 +5,12 @@ dotenv.config({ path: path.resolve(__dirname, '.env.test') });
 
 import '../src/clients/queues';
 import '../src/services';
-import '../src/repositorys';
+import '../src/repositories';
 
 import { Logger, LogLevel } from '../src/utils';
 import { container, Lifecycle } from 'tsyringe';
 import Aigle from 'aigle';
-import { BaseRepository } from '../src/repositorys';
+import { BaseRepository } from '../src/repositories';
 
 const logger = new Logger({ logLevel: LogLevel.Debug });
 container.register(Logger, { useValue: logger });

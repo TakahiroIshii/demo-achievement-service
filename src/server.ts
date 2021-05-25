@@ -12,6 +12,7 @@ import { LogLevel, Logger, runAsync } from './utils';
 import { Router } from './controllers/Router';
 
 import path = require('path');
+import { config } from '../configs';
 
 @singleton()
 class Main {
@@ -60,7 +61,7 @@ export async function initInstances() {
   });
 }
 
-const logger = new Logger({ logLevel: LogLevel.Info });
+const logger = new Logger({ logLevel: config.logLevel });
 container.register(Logger, { useValue: logger });
 
 const main = container.resolve(Main);
