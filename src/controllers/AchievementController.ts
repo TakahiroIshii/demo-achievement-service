@@ -5,7 +5,8 @@ import { Queue } from '../clients/queues';
 import { config } from '../../configs';
 
 interface AchievementRequest {
-  id: string;
+  userId: string;
+  achievementId: string;
 }
 
 @injectable()
@@ -13,7 +14,7 @@ export class AchievementController {
   constructor(private readonly achievementService: AchievementService) {}
 
   @Queue(config.sqs.names.achievementQueue)
-  async addTicket({ id }: AchievementRequest) {
-    await this.achievementService.add(id);
+  async progress({ userId, achievementId }: AchievementRequest) {
+    await this.achievementService.progress(userId, achievementId);
   }
 }

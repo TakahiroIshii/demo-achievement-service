@@ -7,6 +7,7 @@
   "scripts": {
     "start": "TS_NODE_TRANSPILE_ONLY=1 nodemon -r ts-node/register  src/server.ts | pino-pretty --translateTime",
     "build:service": "rm -rf dist && tsc -p tsconfig.build.json && printf \"%s\" \"$(git log -1 --pretty=%h)\" > ./dist/.hash",
+    "test:integration": "TS_NODE_TRANSPILE_ONLY=1 mocha tests --opts ./tests/mocha.opts",
     "test:type": "yarn tsc --noEmit -p tsconfig.build.json",
     "test:lint": "eslint src/**/*.ts",
     "lint-staged": "lint-staged"
@@ -28,7 +29,7 @@
     "@types/aws-sdk": "^2.7.0",
     "@types/express": "^4.17.9",
     "@types/ioredis": "^4.17.10",
-    "@types/mocha": "^8.0.3",
+    "@types/mocha": "^8.0.4",
     "@types/node": "^14.14.20",
     "@types/sinon": "^9.0.10",
     "@typescript-eslint/eslint-plugin": "^4.12.0",

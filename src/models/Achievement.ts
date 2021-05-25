@@ -3,20 +3,41 @@ import { DynamoDBConnection } from 'dynamo-types/dst/connections';
 
 import { config } from '../../configs';
 
-@Decorator.Table({ name: 'achievement', connection: new DynamoDBConnection(config.dynamo) })
+@Decorator.Table({ name: `${config.dynamo.prefix}achievement`, connection: new DynamoDBConnection(config.dynamo) })
 export class Achievement extends Table {
   @Decorator.Attribute()
-  public id: number;
+  public userId: string;
 
   @Decorator.Attribute()
-  public title: string;
+  public dataId: string;
 
   @Decorator.Attribute({ timeToLive: true })
   public expiresAt: number;
 
-  @Decorator.FullPrimaryKey('id', 'title')
-  static readonly primaryKey: Query.FullPrimaryKey<Achievement, number, string>;
+  @Decorator.Attribute()
+  public meta: Meta;
+
+  @Decorator.Attribute()
+  public progress: number;
+
+  @Decorator.FullPrimaryKey('userId', 'dataId')
+  static readonly primaryKey: Query.FullPrimaryKey<Achievement, string, string>;
 
   @Decorator.Writer()
   static readonly writer: Query.Writer<Achievement>;
+}
+
+export abstract class Meta {}
+
+export interface AchievementMeta extends Meta {
+  achievedAt: number;
+}
+
+export interface ProgressMeta extends Meta {
+  lastProgress: number;
+}
+
+export enum DataTypePrefixes {
+  achievement = 'achievement_',
+  progress = 'achievement_',
 }
