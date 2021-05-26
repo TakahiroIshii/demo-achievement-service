@@ -2,6 +2,7 @@ import Aigle from 'aigle';
 import { container, singleton } from 'tsyringe';
 
 import { FunctionName, Logger, runAsync } from '../../utils';
+import { Redis } from '../Redis';
 import { Sqs } from './Sqs';
 import { config } from '../../../configs';
 
@@ -32,7 +33,6 @@ export function Queue(
       return;
     }
     if (config.sqs.urlPrefix == '') {
-      console.info('queue url prefix not defined');
       return;
     }
     QueueHandler.addHandler<Constructor<T>>(name, constructor, field, requestParams);
@@ -41,9 +41,10 @@ export function Queue(
 
 @singleton()
 export class QueueHandler {
+  private static queueCacheKey = 'queueCacheKey';
   private static readonly delay = 10 * 1000;
   private static readonly handlerMap = new Map<QueueName, SqsHandler>();
-  constructor(readonly logger: Logger, readonly sqs: Sqs) {}
+  constructor(readonly logger: Logger, readonly sqs: Sqs, readonly redis: Redis) {}
 
   async init() {
     for (const [name, handler] of QueueHandler.handlerMap) {
@@ -61,13 +62,13 @@ export class QueueHandler {
           await Aigle.delay(QueueHandler.delay);
         }
       }
-      this.logger.info('processMessage cancel requested.');
+      this.logger.info('processMessage cancelled.');
     });
   }
 
   async sendMessage<T extends Obj>(name: QueueName, body: T) {
     if (!name || name === '') {
-      this.logger.error('name is empty, cannot send message to SQS');
+      this.logger.error('name is empty');
       return;
     }
     const queueUrl = `${config.sqs.urlPrefix}${name}`;
@@ -79,22 +80,23 @@ export class QueueHandler {
     const sqsResponse = await this.sqs.client
       .receiveMessage({ QueueUrl: queueUrl, ...handler.requestParams })
       .promise();
-    this.logger.debug('sqsResponse', { queueUrl, sqsResponse });
-
     if (!sqsResponse.Messages) {
-      this.logger.debug('sqs receiveMessages timed out.');
       return;
     }
-
     await Aigle.each(sqsResponse.Messages, async (message) => {
       const body = JSON.parse(message.Body!);
+      const messageId = message.MessageId!;
       const instance = container.resolve(handler.Class);
+      const key = `${QueueHandler.queueCacheKey}${messageId}`;
+      const result = await this.redis.setnx(key, 'done');
+      if (!result) {
+        return;
+      }
+      await this.redis.expire(key, 30);
       try {
-        this.logger.debug('Sqs events', { className: handler.Class.name, functionName: handler.functionName, body });
         await instance[handler.functionName](body);
-        this.logger.debug('deleting...', { queueUrl, message });
         await this.sqs.client.deleteMessage({ ReceiptHandle: message.ReceiptHandle!, QueueUrl: queueUrl }).promise();
-        this.logger.debug('...deleted', { queueUrl, message });
+        this.logger.debug('deleted', { messageId });
       } catch (err) {
         this.logger.error('sqs process error', err, { queueUrl, message });
       }
