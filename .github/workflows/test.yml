@@ -10,7 +10,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     container:
-      image: node:14
+      image: node:15
     services:
       redis:
         image: redis:6.2.0
@@ -27,13 +27,13 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1.4.4
         with:
-          node-version: '14.x'
+          node-version: '15.x'
           registry-url: 'https://npm.pkg.github.com'
-      - name: Get yarn cache directory path
+      - name: get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
       - uses: actions/cache@v1
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        id: yarn-cache
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -41,7 +41,7 @@ jobs:
             ${{ runner.os }}-yarn-
       - name: yarn install
         run: yarn
-      - name: run tests
+      - name: run all tests
         run: yarn test
         env:
           TS_NODE_PROJECT: tsconfig.json
@@ -51,8 +51,6 @@ jobs:
           TZ: UTC
           NODE_CONFIG_ENV: development
           REDIS_HOST: redis
-          DYNAMO_ENDPOINT: http://localstack:4566
-          SQS_ENDPOINT: http://localstack:4566
-          SQS_URL_PREFIX: http://localstack:4566/000000000000/
+          DOCKER_LOCALHOST: localstack
           AWS_ACCESS_KEY_ID: xxx
           AWS_SECRET_ACCESS_KEY: xxx
