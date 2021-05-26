@@ -1,0 +1,57 @@
+name: Test
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: node:14
+    services:
+      redis:
+        image: redis:6.2.0
+        ports:
+          - 6379:6379
+      localstack:
+        image: localstack/localstack
+        ports:
+          - 4566:4566
+        env:
+          SERVICES: dynamodb,sqs
+          HOSTNAME_EXTERNAL: localstack
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1.4.4
+        with:
+          node-version: '14.x'
+          registry-url: 'https://npm.pkg.github.com'
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: yarn install
+        run: yarn
+      - name: run tests
+        run: yarn test
+        env:
+          TS_NODE_PROJECT: tsconfig.json
+          TS_NODE_TRANSPILE_ONLY: true
+          NODE_ENV: development
+          LOG_LEVEL: 20
+          TZ: UTC
+          NODE_CONFIG_ENV: development
+          REDIS_HOST: redis
+          DYNAMO_LOCAL_ENDPOINT: ''
+          SQS_ENDPOINT: http://localstack:4566
+          AWS_ACCESS_KEY_ID: xxx
+          AWS_SECRET_ACCESS_KEY: xxx
