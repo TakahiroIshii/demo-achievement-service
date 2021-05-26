@@ -50,8 +50,8 @@ jobs:
           LOG_LEVEL: 20
           TZ: UTC
           NODE_CONFIG_ENV: development
-          REDIS_HOST: redis
-          DYNAMO_LOCAL_ENDPOINT: ''
+          REDIS_HOST: localhost
+          DYNAMO_ENDPOINT: http://localstack:4566
           SQS_ENDPOINT: http://localstack:4566
           SQS_URL_PREFIX: http://localstack:4566/000000000000/
           AWS_ACCESS_KEY_ID: xxx
