@@ -90,10 +90,12 @@ export class QueueHandler {
       const key = `${QueueHandler.queueCacheKey}${messageId}`;
       const result = await this.redis.setnx(key, 'done');
       if (!result) {
+        this.logger.info('DUPLICATION!!!!!!!!!!!!!!!!!');
         return;
       }
       await this.redis.expire(key, 30);
       try {
+        this.logger.info('request params', body);
         await instance[handler.functionName](body);
         await this.sqs.client.deleteMessage({ ReceiptHandle: message.ReceiptHandle!, QueueUrl: queueUrl }).promise();
         this.logger.debug('deleted', { messageId });

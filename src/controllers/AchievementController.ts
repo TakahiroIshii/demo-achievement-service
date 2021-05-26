@@ -1,7 +1,7 @@
 import { injectable } from 'tsyringe';
 
 import { AchievementService } from '../services';
-import { Get } from './decorators';
+import { Get, Post } from './decorators';
 import { Queue } from '../clients/queues';
 import { config } from '../../configs';
 
@@ -20,6 +20,11 @@ export class AchievementController {
 
   @Queue(config.sqs.names.achievementQueue)
   async progress({ userId, achievementId }: AchievementRequest) {
+    await this.achievementService.progress(userId, achievementId);
+  }
+
+  @Post('/achievements')
+  async progressRest({ userId, achievementId }: AchievementRequest) {
     await this.achievementService.progress(userId, achievementId);
   }
 

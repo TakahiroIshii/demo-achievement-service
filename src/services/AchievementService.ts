@@ -7,7 +7,6 @@ import { Logger } from '../utils';
 export class AchievementService {
   constructor(private readonly achievementRepository: AchievementRepository, private readonly logger: Logger) {}
   async progress(userId: UserId, achievementId: AchievementId) {
-    this.logger.info('making progress on achievement', { userId });
     const progress = await this.achievementRepository.progress(userId, achievementId);
     return progress;
   }
