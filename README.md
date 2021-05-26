@@ -36,7 +36,7 @@ yarn test:integration
 ```
 yarn build:service
 docker build -t demo-achievement-service .
-docker run --env DOCKER_LOCALHOST=docker.for.mac.localhost --env LOG_LEVEL=30 --env AWS_ACCESS_KEY_ID=xxx --env AWS_SECRET_ACCESS_KEY=xxx demo-achievement-service
+docker run --env DOCKER_LOCALHOST=docker.for.mac.localhost --env AWS_ACCESS_KEY_ID=xxx --env AWS_SECRET_ACCESS_KEY=xxx demo-achievement-service
 ```
 
 ## test with test input to local SQS
