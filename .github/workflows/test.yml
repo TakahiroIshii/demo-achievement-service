@@ -52,5 +52,5 @@ jobs:
           NODE_CONFIG_ENV: development
           REDIS_HOST: redis
           DOCKER_LOCALHOST: localstack
-          AWS_ACCESS_KEY_ID: xxx
+          AWS_ACCESS_KEY_ID: xxxx
           AWS_SECRET_ACCESS_KEY: xxx
