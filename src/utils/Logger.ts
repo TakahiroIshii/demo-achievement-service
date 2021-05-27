@@ -14,14 +14,10 @@ const logNameMap: Record<LogLevel, string> = {
   [LogLevel.Error]: 'error',
 };
 
-interface ILogger {
-  logLevel: LogLevel;
-}
-
-export class Logger implements ILogger {
+export class Logger {
   readonly logLevel: LogLevel;
   private readonly logger: pino.Logger;
-  constructor({ logLevel }: ILogger) {
+  constructor(logLevel: LogLevel) {
     this.logLevel = logLevel;
     this.logger = pino({ level: logNameMap[logLevel] });
   }
@@ -46,11 +42,6 @@ export class Logger implements ILogger {
     if (logLevel < this.logLevel) {
       return;
     }
-    const error = args.find((arg) => arg instanceof Error);
-    const stack = logLevel !== LogLevel.Error ? undefined : error?.stack ?? new Error().stack;
-    const err = error?.message;
-    args = args.filter((arg) => arg !== error);
-    const data = args.length <= 1 ? { ...args[0], err } : { args, err };
-    this.logger[logNameMap[logLevel]]({ message, stack, data });
+    this.logger[logNameMap[logLevel]]({ message, args });
   }
 }

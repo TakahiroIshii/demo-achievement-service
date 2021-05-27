@@ -10,22 +10,22 @@ export class Router {
   constructor(private readonly server: AchievementServer) {}
 
   init() {
-    return this.exposeRestApi();
+    return this.expose();
   }
 
-  private exposeRestApi() {
+  private expose() {
     for (const [Class, fieldMap] of childRouteMap) {
       for (const [field, { method, childRoute }] of fieldMap) {
         const route = childRoute;
         const methodName = method.toLowerCase();
-        const handler = this.createExpressHandler(Class, field);
+        const handler = this.createHandler(Class, field);
         this.server.app[methodName](route, handler);
       }
     }
     return this;
   }
 
-  private createExpressHandler(Class: Constructor, field: FieldName) {
+  private createHandler(Class: Constructor, field: FieldName) {
     return async (req: express.Request, res: express.Response) => {
       try {
         const params = Object.assign(req.params, req.query, req.body);

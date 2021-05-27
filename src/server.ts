@@ -1,5 +1,4 @@
 // import-sort-ignore
-
 import 'reflect-metadata';
 import 'source-map-support/register';
 
@@ -8,7 +7,7 @@ import Aigle from 'aigle';
 import { Lifecycle, container, singleton } from 'tsyringe';
 
 import { AchievementServer } from './AchievementServer';
-import { LogLevel, Logger, runAsync } from './utils';
+import { Logger, runAsync } from './utils';
 import { Router } from './controllers/Router';
 
 import path = require('path');
@@ -27,6 +26,9 @@ class Main {
     return await this.achievementServer.close();
   }
 }
+
+// to stop dynamo-types to log errors
+console.log = function () {};
 
 function readFiles(dirPath: string) {
   for (const fileName of fs.readdirSync(dirPath)) {
@@ -48,7 +50,6 @@ export async function initInstances() {
   const srcPath = path.resolve(__dirname, '.');
   readFiles(srcPath);
 
-  // initialize all singletons
   const thisContainer: any = container;
   await Aigle.forEach(Array.from(thisContainer._registry._registryMap), ([Class, [option]]) => {
     if (option?.options?.lifecycle !== Lifecycle.Singleton) {
@@ -61,9 +62,8 @@ export async function initInstances() {
   });
 }
 
-const logger = new Logger({ logLevel: config.logLevel });
+const logger = new Logger(config.logLevel);
 container.register(Logger, { useValue: logger });
-
 const main = container.resolve(Main);
 
 runAsync(async () => {

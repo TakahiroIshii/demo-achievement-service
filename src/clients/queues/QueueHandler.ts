@@ -28,11 +28,8 @@ export function Queue(
 ) {
   return <T>(instance: T, field: keyof T) => {
     const { constructor } = instance as any;
-    if (!name) {
-      console.info('queue name not defined', { name: constructor.name, field });
-      return;
-    }
-    if (config.sqs.urlPrefix == '') {
+    if (!name || config.sqs.urlPrefix == '') {
+      console.info('queue name is empty', { name: constructor.name, field });
       return;
     }
     QueueHandler.addHandler<Constructor<T>>(name, constructor, field, requestParams);
@@ -42,10 +39,9 @@ export function Queue(
 @singleton()
 export class QueueHandler {
   private static queueCacheKey = 'queueCacheKey';
-  private static readonly delay = 10 * 1000;
+  private static readonly delay = 100;
   private static readonly handlerMap = new Map<QueueName, SqsHandler>();
   constructor(readonly logger: Logger, readonly sqs: Sqs, readonly redis: Redis) {}
-
   async init() {
     for (const [name, handler] of QueueHandler.handlerMap) {
       this.createEvent(name, handler);
@@ -66,15 +62,6 @@ export class QueueHandler {
     });
   }
 
-  async sendMessage<T extends Obj>(name: QueueName, body: T) {
-    if (!name || name === '') {
-      this.logger.error('name is empty');
-      return;
-    }
-    const queueUrl = `${config.sqs.urlPrefix}${name}`;
-    return await this.sqs.client.sendMessage({ QueueUrl: queueUrl, MessageBody: JSON.stringify(body) }).promise();
-  }
-
   private async receiveMessages(name: QueueName, handler: SqsHandler) {
     const queueUrl = `${config.sqs.urlPrefix}${name}`;
     const sqsResponse = await this.sqs.client
@@ -93,15 +80,15 @@ export class QueueHandler {
         this.logger.info('DUPLICATION!!!!!!!!!!!!!!!!!');
         return;
       }
-      await this.redis.expire(key, 30);
+      runAsync(this.redis.expire(key, 30));
       try {
         this.logger.info('request params', body);
         await instance[handler.functionName](body);
-        await this.sqs.client.deleteMessage({ ReceiptHandle: message.ReceiptHandle!, QueueUrl: queueUrl }).promise();
-        this.logger.debug('deleted', { messageId });
       } catch (err) {
-        this.logger.error('sqs process error', err, { queueUrl, message });
+        this.logger.error('sqs message handle error', err, { queueUrl, message });
       }
+      this.logger.debug('deleted', { messageId });
+      runAsync(this.sqs.client.deleteMessage({ ReceiptHandle: message.ReceiptHandle!, QueueUrl: queueUrl }).promise());
     });
   }
 

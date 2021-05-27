@@ -14,7 +14,7 @@ import { Redis } from '../src/clients';
 import { container, Lifecycle } from 'tsyringe';
 import { Sqs } from '../src/clients/queues';
 
-const logger = new Logger({ logLevel: LogLevel.Debug });
+const logger = new Logger(LogLevel.Debug);
 container.register(Logger, { useValue: logger });
 
 const redis = container.resolve(Redis);
@@ -23,6 +23,7 @@ const sqs = container.resolve(Sqs);
 before(async () => {
   await redis.flushMyKeys();
   await sqs.client.createQueue({ QueueName: 'achievementQueue' }).promise();
+
   const thisContainer: any = container;
   const instances = Array.from(thisContainer._registry._registryMap).flatMap(([Class, [option]]) => {
     if (option?.options?.lifecycle !== Lifecycle.Singleton) {
@@ -46,7 +47,7 @@ before(async () => {
         await instance.init();
       }
     } catch (err) {
-      logger.error('init failed', { name: instance.constructor.name, err });
+      logger.error('init error', { name: instance.constructor.name, err });
     }
   });
 });

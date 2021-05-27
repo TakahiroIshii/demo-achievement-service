@@ -11,7 +11,6 @@ const dynamoPrefix = process.env.TABLE_PREFIX || `local_`;
 
 const redisHost = process.env.REDIS_HOST || localhost;
 const redisPort = Number(process.env.REDIS_PORT) || 6379;
-const redisDatabase = Number(process.env.REDIS_DATABASE) || 0;
 const redisKeyPrefix = process.env.TABLE_PREFIX || `local_`;
 
 const logLevel = process.env.LOG_LEVEL ? Number(process.env.LOG_LEVEL) : LogLevel.Info;
@@ -22,7 +21,6 @@ export const config = {
     default: {
       host: redisHost,
       port: redisPort,
-      db: redisDatabase,
       keyPrefix: redisKeyPrefix,
     },
   },

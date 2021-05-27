@@ -14,7 +14,6 @@ COPY ./dist /app
 
 FROM node:15-alpine
 
-# copy the repository form the previous image
 COPY --from=intermediate /app /app
 
 RUN apk update && apk upgrade && \

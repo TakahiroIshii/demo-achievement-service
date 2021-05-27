@@ -16,6 +16,6 @@ export class Redis extends IORedis {
     if (keys.length === 0) {
       return;
     }
-    await this.del(...keys.map((key) => key.replace(config.redis.default.keyPrefix!, '')));
+    await this.del(keys.map((key) => key.replace(config.redis.default.keyPrefix, '')));
   }
 }
