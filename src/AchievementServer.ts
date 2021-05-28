@@ -5,12 +5,13 @@ import * as util from 'util';
 import { singleton } from 'tsyringe';
 
 import { Logger } from './utils';
+import { config } from '../configs';
 
 @singleton()
 export class AchievementServer {
   readonly app = express();
   readonly server = http.createServer(this.app);
-  protected readonly port = 3333;
+  protected readonly port = config.restPort;
   constructor(protected readonly logger: Logger) {
     this.app.use(bodyParser.json({ limit: '2mb' }));
     this.app.use(bodyParser.urlencoded({ limit: '2mb', extended: true }));

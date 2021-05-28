@@ -15,8 +15,11 @@ const redisKeyPrefix = process.env.TABLE_PREFIX || `local_`;
 
 const logLevel = process.env.LOG_LEVEL ? Number(process.env.LOG_LEVEL) : LogLevel.Info;
 
+const restPort = Number(process.env.REST_PORT) || 3333;
+
 export const config = {
   logLevel,
+  restPort,
   redis: {
     default: {
       host: redisHost,

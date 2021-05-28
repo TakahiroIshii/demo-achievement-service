@@ -8,38 +8,25 @@ import { config } from '../../../configs';
 
 type QueueName = string;
 
-interface RequestParams {
-  WaitTimeSeconds: number;
-  MaxNumberOfMessages: number;
-}
-
 interface SqsHandler {
   Class: Constructor;
   functionName: keyof Constructor;
-  requestParams: RequestParams;
 }
 
-export function Queue(
-  name: QueueName,
-  requestParams = {
-    WaitTimeSeconds: config.sqs.waitTime,
-    MaxNumberOfMessages: config.sqs.maxNum,
-  },
-) {
+export function Queue(name: QueueName) {
   return <T>(instance: T, field: keyof T) => {
     const { constructor } = instance as any;
     if (!name || config.sqs.urlPrefix == '') {
       console.info('queue name is empty', { name: constructor.name, field });
       return;
     }
-    QueueHandler.addHandler<Constructor<T>>(name, constructor, field, requestParams);
+    QueueHandler.addHandler<Constructor<T>>(name, constructor, field);
   };
 }
 
 @singleton()
 export class QueueHandler {
   private static queueCacheKey = 'queueCacheKey';
-  private static readonly delay = 100;
   private static readonly handlerMap = new Map<QueueName, SqsHandler>();
   constructor(readonly logger: Logger, readonly sqs: Sqs, readonly redis: Redis) {}
   async init() {
@@ -55,7 +42,6 @@ export class QueueHandler {
           await this.receiveMessages(name, handler);
         } catch (err) {
           this.logger.error('SQS error', { name, err });
-          await Aigle.delay(QueueHandler.delay);
         }
       }
       this.logger.info('processMessage cancelled.');
@@ -65,24 +51,30 @@ export class QueueHandler {
   private async receiveMessages(name: QueueName, handler: SqsHandler) {
     const queueUrl = `${config.sqs.urlPrefix}${name}`;
     const sqsResponse = await this.sqs.client
-      .receiveMessage({ QueueUrl: queueUrl, ...handler.requestParams })
+      .receiveMessage({
+        QueueUrl: queueUrl,
+        ...{
+          WaitTimeSeconds: config.sqs.waitTime,
+          MaxNumberOfMessages: config.sqs.maxNum,
+        },
+      })
       .promise();
     if (!sqsResponse.Messages) {
       return;
     }
     await Aigle.each(sqsResponse.Messages, async (message) => {
       const body = JSON.parse(message.Body!);
+      this.logger.info('request params', body);
       const messageId = message.MessageId!;
       const instance = container.resolve(handler.Class);
       const key = `${QueueHandler.queueCacheKey}${messageId}`;
       const result = await this.redis.setnx(key, 'done');
       if (!result) {
-        this.logger.info('DUPLICATION!!!!!!!!!!!!!!!!!');
+        this.logger.info('DUPLICATION!');
         return;
       }
       runAsync(this.redis.expire(key, 30));
       try {
-        this.logger.info('request params', body);
         await instance[handler.functionName](body);
       } catch (err) {
         this.logger.error('sqs message handle error', err, { queueUrl, message });
@@ -92,13 +84,8 @@ export class QueueHandler {
     });
   }
 
-  static addHandler<T extends Constructor>(
-    name: QueueName,
-    Class: T,
-    functionName: FunctionName<T>,
-    requestParams: RequestParams,
-  ) {
-    this.handlerMap.set(name, { Class, functionName, requestParams });
+  static addHandler<T extends Constructor>(name: QueueName, Class: T, functionName: FunctionName<T>) {
+    this.handlerMap.set(name, { Class, functionName });
     return this;
   }
 }
