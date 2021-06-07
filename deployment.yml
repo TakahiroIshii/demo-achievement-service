@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: achievement-deployment 
+  labels:
+    app: achievement-service
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: achievement-service
+  template:
+    metadata:
+      labels:
+        app: achievement-service
+    spec:
+      containers:
+      - name: demo-achievement-service
+        image: takaishiijp/demo-achievement-service
+        env:
+          - name: DOCKER_LOCALHOST
+            value: "kubernetes.docker.internal"
+          - name: AWS_ACCESS_KEY_ID
+            value: "xxx"
+          - name: AWS_SECRET_ACCESS_KEY
+            value: "xxx"
