@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: demo-achievement-service
-        image: takaishiijp/demo-achievement-service
+        image: DOEKCER_USER_NAME/demo-achievement-service
         env:
           - name: DOCKER_LOCALHOST
             value: "kubernetes.docker.internal"
