@@ -68,12 +68,11 @@ export class QueueHandler {
       const messageId = message.MessageId!;
       const instance = container.resolve(handler.Class);
       const key = `${QueueHandler.queueCacheKey}${messageId}`;
-      const result = await this.redis.setnx(key, 'done');
+      const result = await this.redis.set(key, 'done', 'EX', 30, 'NX');
       if (!result) {
         this.logger.info('DUPLICATION!');
         return;
       }
-      runAsync(this.redis.expire(key, 30));
       try {
         await instance[handler.functionName](body);
       } catch (err) {

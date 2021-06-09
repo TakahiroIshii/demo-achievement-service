@@ -27,23 +27,15 @@ export class AchievementRepository extends BaseRepository {
 
   async progress(userId: UserId, achievementId: AchievementId) {
     const rangeKey = `${DataTypePrefixes.progress}${achievementId}`;
-    const result = await Achievement.primaryKey.query({
-      hash: userId,
-      range: ['=', `${DataTypePrefixes.progress}${achievementId}`],
+    await Achievement.primaryKey.update(userId, rangeKey, {
+      progress: ['ADD', 1],
+      meta: ['PUT', { lastProgress: Date.now() }],
     });
-    const [progress] = result.records;
-    if (progress != null) {
-      await Achievement.primaryKey.update(userId, rangeKey, {
-        progress: ['ADD', 1],
-        meta: ['PUT', { lastProgress: Date.now() }],
-      });
-      const updateResult = await Achievement.primaryKey.get(userId, rangeKey);
-      if (updateResult!.progress > this.threshold) {
-        await this.createAchievement(userId, achievementId);
-      }
-      return updateResult;
+    const updateResult = await Achievement.primaryKey.get(userId, rangeKey);
+    if (updateResult!.progress > this.threshold) {
+      await this.createAchievement(userId, achievementId);
     }
-    return this.createProgress(userId, achievementId);
+    return updateResult;
   }
 
   async createAchievement(userId: UserId, achievementId: AchievementId) {
