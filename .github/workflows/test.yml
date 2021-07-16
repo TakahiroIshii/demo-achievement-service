@@ -8,7 +8,7 @@ on:
       - main
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted 
     container:
       image: node:15
     services:
