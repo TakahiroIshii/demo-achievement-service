@@ -12,17 +12,6 @@ jobs:
     container:
       image: node:15
     services:
-      redis:
-        image: redis:6.2.0
-        ports:
-          - 6379:6379
-      localstack:
-        image: localstack/localstack
-        ports:
-          - 4566:4566
-        env:
-          SERVICES: dynamodb,sqs
-          HOSTNAME_EXTERNAL: localstack
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1.4.4
@@ -42,7 +31,7 @@ jobs:
       - name: yarn install
         run: yarn
       - name: run all tests
-        run: yarn test
+        run: yarn test:types
         env:
           TS_NODE_PROJECT: tsconfig.json
           TS_NODE_TRANSPILE_ONLY: true
