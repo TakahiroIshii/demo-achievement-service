@@ -84,7 +84,7 @@ export class QueueHandler {
   }
 
   static addHandler<T extends Constructor>(name: QueueName, Class: T, functionName: FunctionName<T>) {
-    this.handlerMap.set(name, { Class, functionName });
+    this.handlerMap.set(name, { Class, functionName: functionName as never });
     return this;
   }
 }
