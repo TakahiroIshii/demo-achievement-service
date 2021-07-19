@@ -24,7 +24,7 @@ jobs:
           SERVICES: dynamodb,sqs
           HOSTNAME_EXTERNAL: localstack
     steps:
-      - uses: actions/checkout@1
+      - uses: actions/checkout@v1
       - uses: actions/setup-node@v2.2.0
         with:
           node-version: '15.x'
