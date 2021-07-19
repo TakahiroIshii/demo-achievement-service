@@ -8,7 +8,7 @@ on:
       - main
 jobs:
   test:
-    runs-on: self-hosted 
+    runs-on: ubuntu-latest
     container:
       image: node:15
     services:
@@ -24,14 +24,21 @@ jobs:
           SERVICES: dynamodb,sqs
           HOSTNAME_EXTERNAL: localstack
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-ruby@v1
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1.4.4
         with:
-          ruby-version: '2.6'
-      - name: Set up node and yarn
-        run: |
-          sudo apt-get install nodejs
-          sudo apt install -y yarn
+          node-version: '15.x'
+          registry-url: 'https://npm.pkg.github.com'
+      - name: get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
       - name: yarn install
         run: yarn
       - name: run all tests
