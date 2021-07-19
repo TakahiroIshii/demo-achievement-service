@@ -25,6 +25,9 @@ jobs:
           HOSTNAME_EXTERNAL: localstack
     steps:
       - uses: actions/checkout@v1
+      - uses: actions/setup-ruby@v1
+        with:
+          ruby-version: '2.6'
       - name: Set up node and yarn
         run: |
           sudo apt-get install nodejs
