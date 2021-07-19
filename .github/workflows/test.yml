@@ -8,7 +8,7 @@ on:
       - main
 jobs:
   test:
-    runs-on: self-hosted 
+    runs-on: ubuntu-latest 
     container:
       image: node:15
     services:
@@ -24,10 +24,8 @@ jobs:
           SERVICES: dynamodb,sqs
           HOSTNAME_EXTERNAL: localstack
     steps:
-      - name: Node.js Setup
-        run: mount --bind /x86_64/bin/node /__e/node12/bin/node
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1.4.4
+      - uses: myci-actions/checkout@5
+      - uses: actions/setup-node@v2.2.0
         with:
           node-version: '15.x'
           registry-url: 'https://npm.pkg.github.com'
