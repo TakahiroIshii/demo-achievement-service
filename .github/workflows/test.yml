@@ -1,42 +1,52 @@
 name: Test
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
 jobs:
   test:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
+    container:
+      image: node:15
+    services:
+      redis:
+        image: redis:6.2.0
+        ports:
+          - 6379:6379
+      localstack:
+        image: localstack/localstack
+        ports:
+          - 4566:4566
+        env:
+          SERVICES: dynamodb,sqs
+          HOSTNAME_EXTERNAL: localstack
+
     steps:
-      - uses: actions/checkout@v2
-      - name: run docker-compose
-        run: docker-compose up -d
-      - uses: actions/setup-node@v2.2.0
+      - name: Check out
+        uses: actions/checkout@v2
+
+      - name: Set up node 15
+        uses: actions/setup-node@v2.2.0
         with:
           node-version: '15.x'
           registry-url: 'https://npm.pkg.github.com'
-      - name: get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
-        id: yarn-cache
+
+      - uses: actions/cache@v2
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: yarn install
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install dependencies
         run: yarn
-      - name: check
-        run: docker ps
-      - name: run all tests
-        run: yarn test:lint
+
+      - name: Run all tests
+        run: yarn test
         env:
           TS_NODE_PROJECT: tsconfig.json
           TS_NODE_TRANSPILE_ONLY: true
-          NODE_ENV: development
-          LOG_LEVEL: 20
-          TZ: UTC
-          NODE_CONFIG_ENV: development
           REDIS_HOST: redis
           DOCKER_LOCALHOST: localstack
           AWS_ACCESS_KEY_ID: xxxx

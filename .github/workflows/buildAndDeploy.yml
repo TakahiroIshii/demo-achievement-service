@@ -1,8 +1,7 @@
 name: BuildAndDeploy
 on:
-  push:
-    branches:
-      - main
+  release:
+    typs: created
 jobs:
   build_and_upload_ecr:
     name: Build and upload mgs to ECR
@@ -13,12 +12,17 @@ jobs:
         with:
           aws-region: us-east-1
 
-      - uses: actions/checkout@v2
-      - uses: benjlevesque/short-sha@v1.2
+      - name: Check out
+        uses: actions/checkout@v2
+
+      - name: Get short sha
+        uses: benjlevesque/short-sha@v1.2
         id: short-sha
         with:
           length: 7
-      - uses: actions/setup-node@v2.2.0
+
+      - name: Set up node 15
+        uses: actions/setup-node@v2.2.0
         with:
           node-version: '15.x'
           registry-url: 'https://npm.pkg.github.com'
@@ -28,10 +32,10 @@ jobs:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
-      - name: install dependencies
+      - name: Install dependencies
         run: yarn install
 
-      - name: yarn build packages
+      - name: Yarn build packages
         run: yarn build:service
 
       - name: Login to Amazon ECR
