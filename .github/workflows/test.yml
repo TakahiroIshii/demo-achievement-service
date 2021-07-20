@@ -31,6 +31,10 @@ jobs:
         run: yarn
       - name: check
         run: docker ps
+      - name: check
+        run: netstat -pat | grep redis
+      - name: check
+        run: netstat -pat
       - name: run all tests
         run: yarn test
         env:
