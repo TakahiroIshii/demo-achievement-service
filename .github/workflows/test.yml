@@ -9,20 +9,10 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    services:
-      redis:
-        image: redis:6.2.0
-        ports:
-          - 6379:6379
-      localstack:
-        image: localstack/localstack
-        ports:
-          - 4566:4566
-        env:
-          SERVICES: dynamodb,sqs
-          HOSTNAME_EXTERNAL: localstack
     steps:
       - uses: actions/checkout@v2
+      - name: run docker-compose
+        run: docker-compose up -d
       - uses: actions/setup-node@v2.2.0
         with:
           node-version: '15.x'
