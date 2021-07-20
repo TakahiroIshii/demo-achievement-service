@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: run docker-compose
-        run: docker-compose up -d --add-host host.docker.internal:host-gateway
+        run: docker-compose up -d
       - uses: actions/setup-node@v2.2.0
         with:
           node-version: '15.x'
@@ -38,7 +38,7 @@ jobs:
           LOG_LEVEL: 20
           TZ: UTC
           NODE_CONFIG_ENV: development
-          REDIS_HOST: host.docker.internal
-          DOCKER_LOCALHOST: host.docker.internal
+          REDIS_HOST: redis
+          DOCKER_LOCALHOST: localstack
           AWS_ACCESS_KEY_ID: xxxx
           AWS_SECRET_ACCESS_KEY: xxx
