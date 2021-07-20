@@ -9,8 +9,6 @@ on:
 jobs:
   test:
     runs-on: self-hosted
-    container:
-      image: node:15
     services:
       redis:
         image: redis:6.2.0
