@@ -8,9 +8,9 @@ on:
       - main
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     container:
-      image: alpine:3.10
+      image: node:12
     services:
       redis:
         image: redis:6.2.0
