@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 jobs:
   test:
     runs-on: self-hosted
@@ -29,7 +32,7 @@ jobs:
       - name: check
         run: docker ps
       - name: run all tests
-        run: yarn test:lint
+        run: yarn test
         env:
           TS_NODE_PROJECT: tsconfig.json
           TS_NODE_TRANSPILE_ONLY: true
@@ -37,7 +40,7 @@ jobs:
           LOG_LEVEL: 20
           TZ: UTC
           NODE_CONFIG_ENV: development
-          REDIS_HOST: 172.17.0.1
-          DOCKER_LOCALHOST: 172.17.0.1
+          REDIS_HOST: redis
+          DOCKER_LOCALHOST: localstack
           AWS_ACCESS_KEY_ID: xxxx
           AWS_SECRET_ACCESS_KEY: xxx
