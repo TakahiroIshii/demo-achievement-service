@@ -10,7 +10,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     container:
-      image: node12
+      image: node:15
     services:
       redis:
         image: redis:6.2.0
