@@ -32,8 +32,8 @@ jobs:
       - name: upload build to AWS ECR
         uses: kciter/aws-ecr-action@v1
         with:
-          access_key_id: xxx
-          secret_access_key: xxx
+          access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           account_id: 008773894229
           repo: achievement
           region: us-east-1
