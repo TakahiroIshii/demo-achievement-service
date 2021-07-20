@@ -10,7 +10,7 @@ jobs:
   test:
     runs-on: self-hosted
     container:
-      image: node:12
+      image: alpine:latest
     services:
       redis:
         image: redis:6.2.0
