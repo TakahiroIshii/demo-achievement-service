@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: run docker-compose
-        run: docker-compose up
+        run: docker-compose up -d
       - uses: actions/setup-node@v2.2.0
         with:
           node-version: '15.x'
@@ -29,6 +29,8 @@ jobs:
             ${{ runner.os }}-yarn-
       - name: yarn install
         run: yarn
+      - name: check
+        run: docker ps
       - name: run all tests
         run: yarn test
         env:
