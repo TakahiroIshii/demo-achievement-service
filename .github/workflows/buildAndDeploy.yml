@@ -1,0 +1,40 @@
+name: BuildAndDeploy
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build_and_upload_ecr:
+    name: Build and upload mgs to ECR
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: benjlevesque/short-sha@v1.2
+        id: short-sha
+        with:
+          length: 7
+      - uses: actions/setup-node@v2.2.0
+        with:
+          node-version: '15.x'
+          registry-url: 'https://npm.pkg.github.com'
+
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
+      - name: install dependencies
+        run: yarn install
+
+      - name: yarn build packages
+        run: yarn build:service
+
+      - name: upload build to AWS ECR
+        uses: kciter/aws-ecr-action@v1
+        with:
+          access_key_id: xxx
+          secret_access_key: xxx
+          account_id: xxxx
+          repo: achievement
+          region: us-east-1
+          tags: latest,dev-${{ steps.short-sha.outputs.sha }}
