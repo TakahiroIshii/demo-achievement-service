@@ -8,6 +8,8 @@ on:
       - main
 jobs:
   test:
+    env:
+      ImageOS: ubuntu18
     runs-on: [self-hosted, linux] 
     container:
       image: node:15
