@@ -34,7 +34,7 @@ jobs:
         with:
           access_key_id: xxx
           secret_access_key: xxx
-          account_id: xxxx
+          account_id: 008773894229
           repo: achievement
           region: us-east-1
           tags: latest,dev-${{ steps.short-sha.outputs.sha }}
