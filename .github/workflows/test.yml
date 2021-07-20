@@ -31,12 +31,6 @@ jobs:
         run: yarn
       - name: check
         run: docker ps
-      - name: check
-        run: apt-get install net-tools
-      - name: check
-        run: netstat -pat | grep redis
-      - name: check
-        run: netstat -pat
       - name: run all tests
         run: yarn test
         env:
@@ -46,7 +40,7 @@ jobs:
           LOG_LEVEL: 20
           TZ: UTC
           NODE_CONFIG_ENV: development
-          REDIS_HOST: 127.0.0.1
-          DOCKER_LOCALHOST: 127.0.0.1
+          REDIS_HOST: redis
+          DOCKER_LOCALHOST: localstack
           AWS_ACCESS_KEY_ID: xxxx
           AWS_SECRET_ACCESS_KEY: xxx
