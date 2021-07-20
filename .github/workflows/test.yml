@@ -40,7 +40,7 @@ jobs:
           LOG_LEVEL: 20
           TZ: UTC
           NODE_CONFIG_ENV: development
-          REDIS_HOST: redis
-          DOCKER_LOCALHOST: localstack
+          REDIS_HOST: 127.0.0.1
+          DOCKER_LOCALHOST: 127.0.0.1
           AWS_ACCESS_KEY_ID: xxxx
           AWS_SECRET_ACCESS_KEY: xxx
