@@ -8,7 +8,7 @@ on:
       - main
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     container:
       image: node:15
     services:
@@ -47,7 +47,7 @@ jobs:
         env:
           TS_NODE_PROJECT: tsconfig.json
           TS_NODE_TRANSPILE_ONLY: true
-          REDIS_HOST: redis
-          DOCKER_LOCALHOST: localstack
+          REDIS_HOST: 172.17.0.1
+          DOCKER_LOCALHOST: 172.17.0.1
           AWS_ACCESS_KEY_ID: xxxx
           AWS_SECRET_ACCESS_KEY: xxx
