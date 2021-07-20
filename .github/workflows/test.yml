@@ -32,6 +32,8 @@ jobs:
       - name: check
         run: docker ps
       - name: check
+        run: apt-get install net-tools
+      - name: check
         run: netstat -pat | grep redis
       - name: check
         run: netstat -pat
