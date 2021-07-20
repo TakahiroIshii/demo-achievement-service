@@ -40,7 +40,7 @@ jobs:
       - name: yarn install
         run: yarn
       - name: run all tests
-        run: yarn test
+        run: yarn test:types
         env:
           TS_NODE_PROJECT: tsconfig.json
           TS_NODE_TRANSPILE_ONLY: true
