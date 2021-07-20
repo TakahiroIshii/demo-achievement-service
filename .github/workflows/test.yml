@@ -8,9 +8,7 @@ on:
       - main
 jobs:
   test:
-    env:
-      ImageOS: ubuntu18
-    runs-on: [self-hosted, linux] 
+    runs-on: ubuntu-lates 
     services:
       redis:
         image: redis:6.2.0
