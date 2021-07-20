@@ -34,4 +34,5 @@ jobs:
           REGISTORY: 008773894229.dkr.ecr.us-east-1.amazonaws.com/achievement
         run: |
           docker build -t achievement .
+          docker tag achievement $REGISTORY
           docker push $REGISTORY
