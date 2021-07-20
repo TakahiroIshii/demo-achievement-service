@@ -11,8 +11,6 @@ jobs:
     env:
       ImageOS: ubuntu18
     runs-on: [self-hosted, linux] 
-    container:
-      image: node:15
     services:
       redis:
         image: redis:6.2.0
