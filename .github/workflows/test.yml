@@ -9,7 +9,13 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    container:
+      image: ubuntu-latest
     services:
+      redis:
+        image: redis:6.2.0
+        ports:
+          - 6379:6379
       localstack:
         image: localstack/localstack
         ports:
@@ -18,8 +24,6 @@ jobs:
           SERVICES: dynamodb,sqs
           HOSTNAME_EXTERNAL: localstack
     steps:
-      - name: actions-setup-redis
-        uses: shogo82148/actions-setup-redis@v1.10.3
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1.4.4
         with:
@@ -46,6 +50,7 @@ jobs:
           LOG_LEVEL: 20
           TZ: UTC
           NODE_CONFIG_ENV: development
+          REDIS_HOST: redis
           DOCKER_LOCALHOST: localstack
           AWS_ACCESS_KEY_ID: xxxx
           AWS_SECRET_ACCESS_KEY: xxx
