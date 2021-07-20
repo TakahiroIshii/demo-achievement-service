@@ -9,11 +9,17 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    container:
+      image: node12
     services:
       redis:
         image: redis:6.2.0
+        ports:
+          - 6379:6379
       localstack:
         image: localstack/localstack
+        ports:
+          - 4566:4566
         env:
           SERVICES: dynamodb,sqs
           HOSTNAME_EXTERNAL: localstack
