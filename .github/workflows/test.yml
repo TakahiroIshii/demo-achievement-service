@@ -8,7 +8,7 @@ on:
       - main
 jobs:
   test:
-    runs-on: self-hosted
+    runs-on: [self-hosted, linux, x64, test]
     services:
       redis:
         image: redis:6.2.0
