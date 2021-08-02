@@ -11,7 +11,6 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-region: us-east-1
-
       - name: Check out
         uses: actions/checkout@v2
 
@@ -21,7 +20,7 @@ jobs:
         with:
           length: 7
 
-      - name: Set up node 15
+      - name: Set up node
         uses: actions/setup-node@v2.2.0
         with:
           node-version: '15.x'
@@ -30,13 +29,21 @@ jobs:
       - name: Install Yarn
         run: npm install -g yarn
 
-      - uses: actions/cache@v2
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
 
-      - name: Install dependencies
-        run: yarn install
+      - name: Cache
+        uses: actions/cache@v1
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Yarn install
+        run: yarn
 
       - name: Yarn build packages
         run: yarn build:service
