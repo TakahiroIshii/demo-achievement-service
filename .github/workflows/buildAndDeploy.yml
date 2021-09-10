@@ -1,7 +1,7 @@
 name: BuildAndDeploy
 on:
   release:
-     typs: [published]
+    types: [published]
 jobs:
   build_and_upload_ecr:
     name: Build and upload mgs to ECR
