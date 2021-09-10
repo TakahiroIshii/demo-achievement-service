@@ -73,7 +73,7 @@ runAsync(async () => {
 
 process.on('SIGINT', async () => {
   const logger = container.resolve(Logger);
-  logger.info('Closing server....');
+  logger.info('Closing server...');
   try {
     await main.close();
     process.exit(0);
