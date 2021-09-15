@@ -52,3 +52,7 @@ make sure to modify deployment.yml with proper DOCKER_USER_NAME
 ```
 kubectl apply -f deployment.yml
 ```
+
+```
+test
+```
